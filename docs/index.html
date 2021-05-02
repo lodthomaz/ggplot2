@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>Conhecendo o ggplot</title>
+    <title>Conhecendo o ggplot2</title>
     <meta charset="utf-8" />
     <meta name="author" content="Letícia Thomaz (RLadies - SP)" />
     <meta name="date" content="2021-05-06" />
@@ -13,7 +13,7 @@
     <textarea id="source">
 class: center, middle, inverse, title-slide
 
-# Conhecendo o ggplot
+# Conhecendo o ggplot2
 ## RLadies Teresina
 ### Letícia Thomaz (RLadies - SP)
 ### 05/06/2021
@@ -117,7 +117,7 @@ class: middle
 
 ```r
 ggplot(data = [SUA BASE DE DADOS],
-*       mapping = aes(x = [VARIÁVEL DO EIXO X],
+*      mapping = aes(x = [VARIÁVEL DO EIXO X],
 *                    y = [VARIÁVEL DO EIXO Y]))) + 
   geom_[OBJETO]
 ```
@@ -168,7 +168,7 @@ ggplot(data = dados,
 
 - Suavização: `geom_smooth()`
 
-- Adicionar etiquetas ou textos: `geom_label()` ou `geom_text()`
+- Adicionar rótulos ou textos: `geom_label()` ou `geom_text()`
 
 ---
 
@@ -195,7 +195,7 @@ Os parâmetros disponíveis são:
 ---
 
 ### Gráfico de dispersão do ph dos vinhos contra a acidez fixa
-Dessa vez vamos contornar os pontos e mudar o formato de acordo com a qualidade do vinho, e aumentar um pouco o tamanho
+Vamos contornar os pontos e mudar o formato de acordo com a qualidade do vinho
 
 
 ```r
@@ -211,8 +211,145 @@ ggplot(data = dados) +
 &lt;img src="index_files/figure-html/unnamed-chunk-8-1.png" style="display: block; margin: auto;" /&gt;
 
 
+---
+class: inverse, middle, center
+
+# Vamos fazer um exemplo colocando mais algumas camadas?
+
+--
+
+1. Fazer um boxplot da variável _alcohol_ pela variável Qualidade
+
+--
+
+2. Adicionar uma **camada** com a quantidade de vinhos em cada Qualidade
+
+--
+
+3. Adicionar uma **camada** que exibe o valor da mediana como texto
+
+--
+
+4. Adicionar uma **camada** que mostra o valor da média como um ponto no gráfico
+
+---
+class: middle, center
+
+**Obs:** para colocar as medidas (tamanho do grupo, mediana e média) no gráfico, criei uma outra base chamada **dados_agrup**
+
+--
+
+![Código](codigo_segundo_grafico.png)
+
+---
+class: middle
+
+# Resultado ... 
+
+&lt;img src="index_files/figure-html/unnamed-chunk-9-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+class: inverse, middle
+
+### Já sabemos fazer um gráfico simples   😄
+
+### E agora já sabemos como adicionar mais camadas    😄
+
+--
+
+# Como mexer no estilo do gráfico ? 
+# Como deixar ele dentro do padrão da apresentação, por exemplo?
+
+---
+
+### Quase tudo no **ggplot2** pode ser modificado. 
+
+Existe uma folhinha de _"cola"_ ([cheatsheet](https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf)) que nos motra todos os parâmetros que podemos adicionar em cada um dos objetos geométricos.  
+Ela também mostra que podemos alterar o título do gráfico, título dos eixos, podemos alterar as cores. Uma infinidade de alterações podem ser feitas nas camadas. 
+
+.center[
+![Cheatsheet](imagem_cheatsheet.png)
+]
+
+---
+
+### Quais as camadas de estilo que eu mais uso ???
+
+`labs()`: essa **camada** altera o título do gráfico, o título do eixo y, e título do eixo x.
+
+```r
+grafico + 
+  labs(title = "Título do meu gráfico",
+       x = "Título do meu eixo x",
+       y = "Título do meu eixo y")
+```
+
+`scale_fill_brewer()`: essa **camada** altera as cores do `fill` que acrescentamos no boxplot, por exemplo:
+
+```r
+grafico + 
+  scale_fill_brewer(name = "Qualidade", palette = "Purples")
+```
+
+`theme_bw()`, `theme_minimal()`, `theme_classic()`: essa **camada** altera o tema do gráfico:
+
+```r
+grafico + 
+  theme_bw()
+```
+
+---
+
+# theme()
+
+Essa camada é uma forma de customizar os componentes do seu gráfico que não envolvem os dados. Por exemplo: fonte do título, tamanho do título, cor dos textos, tamanho da legenda, etc...  
+Normalmente, é a camada que eu deixo por último!
+
+### O que você consegue alterar com essa camada?
+
+* **plot.title**: título do gráfico (fonte, tamanho, cor, posição)
+* **axis.title**: título dos eixos (fonte, tamanho, cor, posição)
+* **legend.background**: cor do fundo da legenda
+
+Se quiser ver tudo que é possível ser alterado, só clicar nesse [link aqui](https://ggplot2.tidyverse.org/reference/theme.html)!
+
+---
+
+# Vamos deixar aquele boxplot mais bonito?
 
 
+```r
+primeiro_boxplot + 
+  # Alterando os títulos
+  labs(title = "Boxplot Percentual Alcóolico x Qualidade do vinho",
+       x = "Qualidade do Vinho",
+       y = "(%) Álcool") + 
+  
+  # Alterando a cor para roxo
+  scale_fill_brewer(name = "Qualidade", palette = "Purples") + 
+  
+  # Alterando o tema
+  theme_bw() + 
+  
+  # Alterando fontes e tamanhos ... 
+  theme(plot.title = element_text(family = "Ink Free", 
+                                  size = 20,
+                                  face = "bold",
+                                  colour = "#562457",
+                                  hjust = 0.5),
+        text = element_text(family = "Ink Free"),
+        axis.title = element_text(size = 17, face = "bold"),
+        axis.text = element_text(size = 15, face = "bold"),
+        legend.text = element_text(size = 15, face = "bold"),
+        legend.title = element_text(size = 17, face = "bold"))
+```
+
+
+---
+
+### Resultado ...
+
+&lt;img src="index_files/figure-html/unnamed-chunk-14-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -224,6 +361,8 @@ class: inverse, middle, center
 Slides criados usando o pacote [**xaringan**](https://github.com/yihui/xaringan).
 
 Todo o material está disponível no [**github!**]()
+
+Siga as RLadies SP no [instagram](https://instagram.com/rladiessaopaulo?igshid=1ij2ofwaxkr2q)  😄
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
