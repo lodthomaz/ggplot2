@@ -439,7 +439,7 @@ class: inverse, middle
 
 ### Quase tudo no **ggplot2** pode ser modificado. 
 
-Existe uma folhinha de _"cola"_ ([cheatsheet](https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf)) que nos motra todos os parâmetros que podemos adicionar em cada um dos objetos geométricos.  
+Existe uma folhinha de _"cola"_ ([cheatsheet](https://github.com/rstudio/cheatsheets/blob/master/data-visualization-2.1.pdf)) que nos motra todos os parâmetros que podemos adicionar em cada um dos objetos geométricos.  
 Ela também mostra que podemos alterar o título do gráfico, título dos eixos, podemos alterar as cores. Uma infinidade de alterações podem ser feitas nas camadas. 
 
 .center[
