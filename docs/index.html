@@ -4,7 +4,7 @@
     <title>Conhecendo o ggplot2</title>
     <meta charset="utf-8" />
     <meta name="author" content="Letícia Thomaz (RLadies - SP)" />
-    <meta name="date" content="2021-05-06" />
+    <meta name="date" content="2021-06-06" />
     <link href="index_files/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="index_files/remark-css-0.0.1/rladies-fonts.css" rel="stylesheet" />
     <link rel="stylesheet" href="rladies.css" type="text/css" />
@@ -16,7 +16,7 @@ class: center, middle, inverse, title-slide
 # Conhecendo o ggplot2
 ## RLadies Teresina
 ### Letícia Thomaz (RLadies - SP)
-### 05/06/2021
+### 06/06/2021
 
 ---
 
@@ -57,7 +57,7 @@ library(ggplot2)
 
 # "Gramática dos Gráficos" 
 
-* É uma estrutura que segue uma abordagem para descrever e construir visualizações ou gráficos de maneira estruturada
+* É uma ferramenta que segue uma abordagem para descrever e construir gráficos de maneira estruturada
 
 * Um [artigo](http://vita.had.co.nz/papers/layered-grammar.pdf) propôs uma parametrização alternativa dessa gramática em 2005
 
@@ -457,7 +457,7 @@ grafico +
 
 ```r
 grafico + 
-  scale_fill_brewer(name = "Temporada", palette = "Purples")
+  scale_fill_brewer(name = "Temporada", palette = "Set3")
 ```
 
 `theme_bw()`, `theme_minimal()`, `theme_classic()`: essa **camada** altera o tema do gráfico:

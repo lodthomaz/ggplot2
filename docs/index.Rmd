@@ -2,7 +2,7 @@
 title: "Conhecendo o ggplot2"
 subtitle: "RLadies Teresina"
 author: "Letícia Thomaz (RLadies - SP)"
-date: "05/06/2021"
+date: "06/06/2021"
 output:
   xaringan::moon_reader:
     css: ["default", "rladies.css", "rladies-fonts"]
@@ -56,7 +56,7 @@ library(ggplot2)
 
 # "Gramática dos Gráficos" 
 
-* É uma estrutura que segue uma abordagem para descrever e construir visualizações ou gráficos de maneira estruturada
+* É uma ferramenta que segue uma abordagem para descrever e construir gráficos de maneira estruturada
 
 * Um [artigo](http://vita.had.co.nz/papers/layered-grammar.pdf) propôs uma parametrização alternativa dessa gramática em 2005
 
@@ -461,7 +461,7 @@ grafico +
 `scale_fill_brewer()`: essa **camada** altera as cores do `fill` que acrescentamos no boxplot, por exemplo:
 ```{r eval=FALSE, tidy=FALSE}
 grafico + 
-  scale_fill_brewer(name = "Temporada", palette = "Purples")
+  scale_fill_brewer(name = "Temporada", palette = "Set3")
 ```
 
 `theme_bw()`, `theme_minimal()`, `theme_classic()`: essa **camada** altera o tema do gráfico:
