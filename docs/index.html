@@ -23,7 +23,6 @@ class: center, middle, inverse, title-slide
 
 
 
-
 class: inverse, center, middle
 
 # GGPLOT2
@@ -55,17 +54,18 @@ library(ggplot2)
 ```
 
 ---
-class: middle
 
 # "Gramática dos Gráficos" 
 
-* É uma ferramenta que permite descrever os componentes de um gráfico
+* É uma estrutura que segue uma abordagem para descrever e construir visualizações ou gráficos de maneira estruturada
 
-* Um [artigo](http://vita.had.co.nz/papers/layered-grammar.pdf) propôs uma parametrização alternativa dessa gramática
+* Um [artigo](http://vita.had.co.nz/papers/layered-grammar.pdf) propôs uma parametrização alternativa dessa gramática em 2005
 
-* Traz a ideia de construir um gráfico a partir de várias **camadas de dados**
+* Traz a ideia de construir um gráfico a partir de várias **camadas**
 
 * As ideias desse artigo foram implementadas no **_ggplot2_**
+
+.center[![:scale 30%](hex-ggplot2.png)]
 
 ---
 
@@ -73,7 +73,7 @@ class: middle
 
 ### Dados
 
-[Base de dados](https://www.kaggle.com/uciml/red-wine-quality-cortez-et-al-2009) de características de vinhos (acidez, densidade, % álcool, qualidade)
+Para criar um gráfico, a primeira coisa que a gente precisa é escolher nossos dados. 
 
 --
 
@@ -96,59 +96,112 @@ class: middle
 
 ---
 
-# Estrutura Básica do ggplot2
+# Dados 
 
---
-
-#### Dados 
+Para os exemplos dessa apresentação, vou usar dados da série **Friends**.  
+Pra quem quiser rodar os exemplos, é só instalar o pacote `install.packages("friends")`.
 
 
 ```r
-* ggplot(data = [SUA BASE DE DADOS],
-       mapping = aes(x = [VARIÁVEL DO EIXO X],
-                     y = [VARIÁVEL DO EIXO Y]))) + 
-  geom_[OBJETO]
+# Carregando os dados 
+df_friends_info &lt;- friends::friends_info
+head(df_friends_info)
 ```
 
---
-
-#### Variáveis 
-
-
-```r
-ggplot(data = [SUA BASE DE DADOS],
-*      mapping = aes(x = [VARIÁVEL DO EIXO X],
-*                    y = [VARIÁVEL DO EIXO Y]))) + 
-  geom_[OBJETO]
+```
+## # A tibble: 6 x 8
+##   season episode title directed_by written_by air_date   us_views_millio~
+##    &lt;int&gt;   &lt;int&gt; &lt;chr&gt; &lt;chr&gt;       &lt;chr&gt;      &lt;date&gt;                &lt;dbl&gt;
+## 1      1       1 The ~ James Burr~ David Cra~ 1994-09-22             21.5
+## 2      1       2 The ~ James Burr~ David Cra~ 1994-09-29             20.2
+## 3      1       3 The ~ James Burr~ Jeffrey A~ 1994-10-06             19.5
+## 4      1       4 The ~ James Burr~ Alexa Jun~ 1994-10-13             19.7
+## 5      1       5 The ~ Pamela Fry~ Jeff Gree~ 1994-10-20             18.6
+## 6      1       6 The ~ Arlene San~ Adam Chas~ 1994-10-27             18.2
+## # ... with 1 more variable: imdb_rating &lt;dbl&gt;
 ```
 
---
+.center[![:scale 17%](hex-friends.png)]
 
-#### Objeto geométrico
+---
+
+# Mapear o que queremos plotar 
+
+Quero dar uma olhada na relação entre o total de visualizações e a avaliação que o episódio recebeu pelo imdb. 
+Então vou querer plotar no eixo x us_views_millions e no eixo y a variável imdb_rating. 
 
 
 ```r
-ggplot(data = [SUA BASE DE DADOS],
-       mapping = aes(x = [VARIÁVEL DO EIXO X],
-                     y = [VARIÁVEL DO EIXO Y]))) + 
-*  geom_[OBJETO]
+# Variáveis escolhidas  
+df_friends_info %&gt;% 
+  select(us_views_millions, imdb_rating) %&gt;% 
+  head()
+```
+
+```
+## # A tibble: 6 x 2
+##   us_views_millions imdb_rating
+##               &lt;dbl&gt;       &lt;dbl&gt;
+## 1              21.5         8.3
+## 2              20.2         8.1
+## 3              19.5         8.2
+## 4              19.7         8.1
+## 5              18.6         8.5
+## 6              18.2         8.1
 ```
 
 ---
 
-### Gráfico de dispersão do ph dos vinhos contra a acidez fixa
+# Definir o objeto geométrico
+
+Como as duas variáveis escolhidas são numéricas e eu quero ver a relação entre elas, eu vou escolher fazer um gráficos de pontos.
+
+&lt;br /&gt;
+
+.center[![](scatterplot_examples.png)]
+
+
+---
+
+# Estrutura Básica do ggplot2
+
+--
+
+## Dados 
+
+.center[![](passo1_ggplot2.png)]
+
+---
+
+# Estrutura Básica do ggplot2
+
+## Variáveis
+
+.center[![](passo2_ggplot2.png)]
+
+---
+
+# Estrutura Básica do ggplot2
+
+## Objeto geométrico
+
+.center[![](passo3_ggplot2.png)]
+
+---
+
+### Gráfico de dispersão das visualizações pela nota do episódio
 
 
 ```r
-ggplot(data = dados,
-       mapping = aes(x = ph, 
-                     y = fixed_acidity)) + 
+ggplot(data = df_friends_info,
+       mapping = aes(x = us_views_millions, 
+                     y = imdb_rating)) + 
   geom_point()
 ```
 
 --
 
-&lt;img src="index_files/figure-html/unnamed-chunk-6-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-4-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -194,35 +247,35 @@ Os parâmetros disponíveis são:
 
 ---
 
-### Gráfico de dispersão do ph dos vinhos contra a acidez fixa
-Vamos contornar os pontos e mudar o formato de acordo com a qualidade do vinho
+### Gráfico de dispersão das visualizações pela nota do episódio
+Vamos **colorir** os pontos de acordo com a temporada que aquele episódio pertence
 
 
 ```r
-ggplot(data = dados) + 
-  geom_point(mapping = aes(x = ph, 
-                           y = fixed_acidity,
-*                          colour = factor(qualidade),
-*                          shape = factor(qualidade))
+ggplot(data = df_friends_info,
+       mapping = aes(x = us_views_millions, 
+                     y = imdb_rating,
+*                    colour = factor(season))) + 
+  geom_point()
 ```
 
 --
 
-&lt;img src="index_files/figure-html/unnamed-chunk-8-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-6-1.png" style="display: block; margin: auto;" /&gt;
 
 
 ---
-class: inverse, middle, center
+class: inverse, middle
 
 # Vamos fazer um exemplo colocando mais algumas camadas?
 
 --
 
-1. Fazer um boxplot da variável _alcohol_ pela variável Qualidade
+1. Fazer um boxplot da variável *us_views_millions* pela variável *season*
 
 --
 
-2. Adicionar uma **camada** com a quantidade de vinhos em cada Qualidade
+2. Adicionar uma **camada** que mostra o valor da média como um ponto no gráfico
 
 --
 
@@ -230,23 +283,139 @@ class: inverse, middle, center
 
 --
 
-4. Adicionar uma **camada** que mostra o valor da média como um ponto no gráfico
+4. Adicionar uma **camada** de texto que identifica quais são os 2 episódios mais assistidos (outliers)
 
 ---
-class: middle, center
 
-**Obs:** para colocar as medidas (tamanho do grupo, mediana e média) no gráfico, criei uma outra base chamada **dados_agrup**
+**Obs:** para colocar as medidas (mediana e média) no gráfico, criei uma outra base chamada **df_friends_agrup**.  
+E para identificar os episódios mais assistidos, criei uma base chamada **top_2**.
+
+
+```r
+# Agrupa os dados para pegar a média e mediana
+df_friends_agrup &lt;- df_friends_info %&gt;% 
+  dplyr::group_by(season) %&gt;% 
+  dplyr::summarise(mean_views = mean(us_views_millions),
+                   median_views = median(us_views_millions)) %&gt;% 
+  dplyr::ungroup()
+
+
+# Seleciona os 2 episódios mais assistidos 
+top_2 &lt;- df_friends_info %&gt;% 
+  arrange(desc(us_views_millions)) %&gt;% 
+  select(season, title, us_views_millions) %&gt;% 
+  head(4) %&gt;% 
+  distinct()
+```
+
+
+---
+
+### 1. Boxplot
+
+
+```r
+parte_1 &lt;- 
+  ggplot() + 
+  geom_boxplot(data = df_friends_info, 
+               mapping = aes(x = factor(season),
+                             y = us_views_millions,
+                             fill = factor(season)))
+```
 
 --
 
-![Código](codigo_segundo_grafico.png)
+![](index_files/figure-html/unnamed-chunk-9-1.png)&lt;!-- --&gt;
 
 ---
-class: middle
 
-# Resultado ... 
+### 2. Boxplot + Média
 
-&lt;img src="index_files/figure-html/unnamed-chunk-9-1.png" style="display: block; margin: auto;" /&gt;
+
+```r
+parte_1e2 &lt;- 
+  parte_1 +
+  geom_point(data = df_friends_agrup,
+             mapping = aes(x = factor(season),
+                           y = mean_views),
+             colour = "yellow", size = 2)
+```
+
+--
+
+![](index_files/figure-html/unnamed-chunk-11-1.png)&lt;!-- --&gt;
+
+---
+
+### 3. Boxplot + Média + Mediana (texto)
+
+
+```r
+parte_1e2e3 &lt;- parte_1e2 +
+  geom_text(data = df_friends_agrup,
+            mapping = aes(x = factor(season),
+                          y = median_views,
+                          label = format(median_views, digits = 1, nsmall = 1)),
+            fontface = "bold", size = 4, vjust = -0.5)
+```
+
+--
+
+![](index_files/figure-html/unnamed-chunk-13-1.png)&lt;!-- --&gt;
+
+
+---
+
+### 4. Boxplot + Média + Mediana (texto) + Top 2 (texto)
+
+
+```r
+parte_1e2e3e4 &lt;- parte_1e2e3 +
+  geom_label(data = top_2,
+            mapping = aes(x = factor(season),
+                          y = us_views_millions,
+                          label = title))
+```
+
+--
+
+![](index_files/figure-html/unnamed-chunk-15-1.png)&lt;!-- --&gt;
+
+---
+
+## Código completo ... 
+
+```r
+ggplot() + 
+  # Camada 1
+  geom_boxplot(data = df_friends_info, 
+               mapping = aes(x = factor(season),
+                             y = us_views_millions,
+                             fill = factor(season))) + 
+  # Camada 2 
+  geom_point(data = df_friends_agrup,
+             mapping = aes(x = factor(season),
+                           y = mean_views),
+             colour = "yellow", size = 2) + 
+  # Camada 3
+  geom_text(data = df_friends_agrup,
+            mapping = aes(x = factor(season),
+                          y = median_views,
+                          label = format(median_views, digits = 1, nsmall = 1)),
+            fontface = "bold", size = 4, vjust = -0.5) +
+  # Camada 4
+  geom_label(data = top_2,
+            mapping = aes(x = factor(season),
+                          y = us_views_millions,
+                          label = title))
+```
+
+
+---
+
+## Resultado ... 
+
+&lt;img src="index_files/figure-html/unnamed-chunk-17-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 class: inverse, middle
@@ -288,7 +457,7 @@ grafico +
 
 ```r
 grafico + 
-  scale_fill_brewer(name = "Qualidade", palette = "Purples")
+  scale_fill_brewer(name = "Temporada", palette = "Purples")
 ```
 
 `theme_bw()`, `theme_minimal()`, `theme_classic()`: essa **camada** altera o tema do gráfico:
@@ -318,15 +487,18 @@ Se quiser ver tudo que é possível ser alterado, só clicar nesse [link aqui](h
 # Vamos deixar aquele boxplot mais bonito?
 
 
+
+
+
 ```r
-primeiro_boxplot + 
+boxplot_anterior + 
   # Alterando os títulos
-  labs(title = "Boxplot Percentual Alcóolico x Qualidade do vinho",
-       x = "Qualidade do Vinho",
-       y = "(%) Álcool") + 
+  labs(title = "Boxplot Us Million Views x Temporada",
+       x = "Temporada",
+       y = "Us Million Views") + 
   
   # Alterando a cor para roxo
-  scale_fill_brewer(name = "Qualidade", palette = "Purples") + 
+  scale_fill_brewer(name = "Temporada", palette = "Set3") + 
   
   # Alterando o tema
   theme_bw() + 
@@ -349,7 +521,7 @@ primeiro_boxplot +
 
 ### Resultado ...
 
-&lt;img src="index_files/figure-html/unnamed-chunk-14-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-23-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -362,10 +534,13 @@ Slides criados usando o pacote [**xaringan**](https://github.com/yihui/xaringan)
 
 Todo o material está disponível no [**github!**](https://github.com/lodthomaz/ggplot2)
 
+Link da apresentação: 
+
 Siga as RLadies SP no [**instagram**](https://instagram.com/rladiessaopaulo?igshid=1ij2ofwaxkr2q)  😄
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="./macro/macros.js"></script>
 <script>var slideshow = remark.create({
 "highlightLines": true,
 "highlightStyle": "github"

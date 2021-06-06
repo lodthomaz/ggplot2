@@ -7,8 +7,9 @@ output:
   xaringan::moon_reader:
     css: ["default", "rladies.css", "rladies-fonts"]
     nature:
-          highlightLines: true
-          highlightStyle: github
+      beforeInit: "./macro/macros.js"  
+      highlightLines: true
+      highlightStyle: github
 ---
 
 ```{r pacotes_e_dados, include=FALSE}
@@ -16,59 +17,11 @@ library(ggplot2)
 library(dplyr)
 library(janitor)
 library(extrafont)
+library(friends)
+
 loadfonts()
 
-# Carrega os dados 
-dados <- read.csv2("./data/winequality-red.csv", sep = ',', dec = '.') %>% 
-  clean_names() %>% 
-  mutate(qualidade = if_else(quality <= 3, "Ruim", 
-                             if_else(quality > 3 & quality < 7, "Normal", "Bom")))
-
-# Renomeando a variável ph
-names(dados)[names(dados) == 'p_h'] <- 'ph'
-
-# Dados Agrupados
-
-dados_agrup <- dados %>% 
-  dplyr::group_by(qualidade) %>% 
-  dplyr::summarise(n = n(),
-                   max = max(alcohol),
-                   mediana = median(alcohol),
-                   media = mean(alcohol)) %>% 
-  dplyr::ungroup()
-
-
-# Faz o boxplot inicial 
-primeiro_boxplot <- ggplot() + 
-  geom_boxplot(data = dados, 
-               mapping = aes(x = qualidade,
-                             y = alcohol,
-                             fill = qualidade)) +
-  geom_label(data = dados_agrup,
-             mapping = aes(x = qualidade,
-                           y = max + 1,
-                           fill = qualidade,
-                           label = n),
-             size = 5,
-             family= "Ink Free",
-             fontface = "bold",
-             hjust = "middle") + 
-  geom_text(data = dados_agrup,
-            mapping = aes(x = qualidade,
-                          y = mediana,
-                          label = format(mediana, digits = 1, nsmall = 1)),
-            nudge_y = 0.4,
-            hjust = -1.0,
-            size = 5,
-            family= "Ink Free",
-            fontface = "bold") + 
-  geom_point(data = dados_agrup,
-             mapping = aes(x = qualidade,
-                           y = media),
-             colour = "white")
-
 ```
-
 
 class: inverse, center, middle
 
@@ -100,17 +53,18 @@ library(ggplot2)
 ```
 
 ---
-class: middle
 
 # "Gramática dos Gráficos" 
 
-* É uma ferramenta que permite descrever os componentes de um gráfico
+* É uma estrutura que segue uma abordagem para descrever e construir visualizações ou gráficos de maneira estruturada
 
-* Um [artigo](http://vita.had.co.nz/papers/layered-grammar.pdf) propôs uma parametrização alternativa dessa gramática
+* Um [artigo](http://vita.had.co.nz/papers/layered-grammar.pdf) propôs uma parametrização alternativa dessa gramática em 2005
 
-* Traz a ideia de construir um gráfico a partir de várias **camadas de dados**
+* Traz a ideia de construir um gráfico a partir de várias **camadas**
 
 * As ideias desse artigo foram implementadas no **_ggplot2_**
+
+.center[![:scale 30%](hex-ggplot2.png)]
 
 ---
 
@@ -118,7 +72,7 @@ class: middle
 
 ### Dados
 
-[Base de dados](https://www.kaggle.com/uciml/red-wine-quality-cortez-et-al-2009) de características de vinhos (acidez, densidade, % álcool, qualidade)
+Para criar um gráfico, a primeira coisa que a gente precisa é escolher nossos dados. 
 
 --
 
@@ -141,58 +95,87 @@ class: middle
 
 ---
 
-# Estrutura Básica do ggplot2
+# Dados 
 
---
+Para os exemplos dessa apresentação, vou usar dados da série **Friends**.  
+Pra quem quiser rodar os exemplos, é só instalar o pacote `install.packages("friends")`.
 
-#### Dados 
-
-```{r eval=FALSE, tidy=FALSE}
-* ggplot(data = [SUA BASE DE DADOS],
-       mapping = aes(x = [VARIÁVEL DO EIXO X],
-                     y = [VARIÁVEL DO EIXO Y]))) + 
-  geom_[OBJETO]
+```{r dados_friends}
+# Carregando os dados 
+df_friends_info <- friends::friends_info
+head(df_friends_info)
 ```
 
---
+.center[![:scale 17%](hex-friends.png)]
 
-#### Variáveis 
+---
 
-```{r eval=FALSE, tidy=FALSE}
-ggplot(data = [SUA BASE DE DADOS],
-*      mapping = aes(x = [VARIÁVEL DO EIXO X],
-*                    y = [VARIÁVEL DO EIXO Y]))) + 
-  geom_[OBJETO]
-```
+# Mapear o que queremos plotar 
 
---
+Quero dar uma olhada na relação entre o total de visualizações e a avaliação que o episódio recebeu pelo imdb. 
+Então vou querer plotar no eixo x us_views_millions e no eixo y a variável imdb_rating. 
 
-#### Objeto geométrico
-
-```{r eval=FALSE, tidy=FALSE}
-ggplot(data = [SUA BASE DE DADOS],
-       mapping = aes(x = [VARIÁVEL DO EIXO X],
-                     y = [VARIÁVEL DO EIXO Y]))) + 
-*  geom_[OBJETO]
+```{r} 
+# Variáveis escolhidas  
+df_friends_info %>% 
+  select(us_views_millions, imdb_rating) %>% 
+  head()
 ```
 
 ---
 
-### Gráfico de dispersão do ph dos vinhos contra a acidez fixa
+# Definir o objeto geométrico
+
+Como as duas variáveis escolhidas são numéricas e eu quero ver a relação entre elas, eu vou escolher fazer um gráficos de pontos.
+
+<br />
+
+.center[![](scatterplot_examples.png)]
+
+
+---
+
+# Estrutura Básica do ggplot2
+
+--
+
+## Dados 
+
+.center[![](passo1_ggplot2.png)]
+
+---
+
+# Estrutura Básica do ggplot2
+
+## Variáveis
+
+.center[![](passo2_ggplot2.png)]
+
+---
+
+# Estrutura Básica do ggplot2
+
+## Objeto geométrico
+
+.center[![](passo3_ggplot2.png)]
+
+---
+
+### Gráfico de dispersão das visualizações pela nota do episódio
 
 ```{r eval=FALSE, tidy=FALSE}
-ggplot(data = dados,
-       mapping = aes(x = ph, 
-                     y = fixed_acidity)) + 
+ggplot(data = df_friends_info,
+       mapping = aes(x = us_views_millions, 
+                     y = imdb_rating)) + 
   geom_point()
 ```
 
 --
 
 ```{r echo=FALSE, fig.align='center', fig.dim=c(7,6)}
-ggplot(data = dados,
-       mapping = aes(x = ph, 
-                     y = fixed_acidity)) + 
+ggplot(data = df_friends_info,
+       mapping = aes(x = us_views_millions, 
+                     y = imdb_rating)) + 
   geom_point()
 ```
 
@@ -240,40 +223,40 @@ Os parâmetros disponíveis são:
 
 ---
 
-### Gráfico de dispersão do ph dos vinhos contra a acidez fixa
-Vamos contornar os pontos e mudar o formato de acordo com a qualidade do vinho
+### Gráfico de dispersão das visualizações pela nota do episódio
+Vamos **colorir** os pontos de acordo com a temporada que aquele episódio pertence
 
 ```{r eval=FALSE, tidy=FALSE}
-ggplot(data = dados) + 
-  geom_point(mapping = aes(x = ph, 
-                           y = fixed_acidity,
-*                          colour = factor(qualidade),
-*                          shape = factor(qualidade))
+ggplot(data = df_friends_info,
+       mapping = aes(x = us_views_millions, 
+                     y = imdb_rating,
+*                    colour = factor(season))) + 
+  geom_point()
 ```
 
 --
 
 ```{r echo=FALSE, fig.align='center', fig.dim=c(8,5)}
-ggplot(data = dados) + 
-  geom_point(mapping = aes(x = ph, 
-                           y = fixed_acidity,
-                           colour = factor(qualidade),
-                           shape = factor(qualidade)))
+ggplot(data = df_friends_info,
+       mapping = aes(x = us_views_millions, 
+                     y = imdb_rating,
+                     colour = factor(season))) + 
+  geom_point()
 ```
 
 
 ---
-class: inverse, middle, center
+class: inverse, middle
 
 # Vamos fazer um exemplo colocando mais algumas camadas?
 
 --
 
-1. Fazer um boxplot da variável _alcohol_ pela variável Qualidade
+1. Fazer um boxplot da variável *us_views_millions* pela variável *season*
 
 --
 
-2. Adicionar uma **camada** com a quantidade de vinhos em cada Qualidade
+2. Adicionar uma **camada** que mostra o valor da média como um ponto no gráfico
 
 --
 
@@ -281,43 +264,163 @@ class: inverse, middle, center
 
 --
 
-4. Adicionar uma **camada** que mostra o valor da média como um ponto no gráfico
+4. Adicionar uma **camada** de texto que identifica quais são os 2 episódios mais assistidos (outliers)
 
 ---
-class: middle, center
 
-**Obs:** para colocar as medidas (tamanho do grupo, mediana e média) no gráfico, criei uma outra base chamada **dados_agrup**
+**Obs:** para colocar as medidas (mediana e média) no gráfico, criei uma outra base chamada **df_friends_agrup**.  
+E para identificar os episódios mais assistidos, criei uma base chamada **top_2**.
+
+```{r message=FALSE, warning=FALSE}
+# Agrupa os dados para pegar a média e mediana
+df_friends_agrup <- df_friends_info %>% 
+  dplyr::group_by(season) %>% 
+  dplyr::summarise(mean_views = mean(us_views_millions),
+                   median_views = median(us_views_millions)) %>% 
+  dplyr::ungroup()
+
+
+# Seleciona os 2 episódios mais assistidos 
+top_2 <- df_friends_info %>% 
+  arrange(desc(us_views_millions)) %>% 
+  select(season, title, us_views_millions) %>% 
+  head(4) %>% 
+  distinct()
+```
+
+
+---
+
+### 1. Boxplot
+
+```{r}
+parte_1 <- 
+  ggplot() + 
+  geom_boxplot(data = df_friends_info, 
+               mapping = aes(x = factor(season),
+                             y = us_views_millions,
+                             fill = factor(season)))
+```
 
 --
 
-![Código](codigo_segundo_grafico.png)
+```{r echo=FALSE, fig.dim=c(11,6)}
+parte_1
+```
 
 ---
-class: middle
 
-# Resultado ... 
+### 2. Boxplot + Média
 
-```{r echo=FALSE, fig.align='center', fig.dim=c(10,7)}
+```{r}
+parte_1e2 <- 
+  parte_1 +
+  geom_point(data = df_friends_agrup,
+             mapping = aes(x = factor(season),
+                           y = mean_views),
+             colour = "yellow", size = 2)
+```
+
+--
+
+```{r echo=FALSE, fig.dim=c(11,6)}
+parte_1e2
+```
+
+---
+
+### 3. Boxplot + Média + Mediana (texto)
+
+```{r}
+parte_1e2e3 <- parte_1e2 +
+  geom_text(data = df_friends_agrup,
+            mapping = aes(x = factor(season),
+                          y = median_views,
+                          label = format(median_views, digits = 1, nsmall = 1)),
+            fontface = "bold", size = 4, vjust = -0.5)
+```
+
+--
+
+```{r echo=FALSE, fig.dim=c(11,6)}
+parte_1e2e3
+```
+
+
+---
+
+### 4. Boxplot + Média + Mediana (texto) + Top 2 (texto)
+
+```{r}
+parte_1e2e3e4 <- parte_1e2e3 +
+  geom_label(data = top_2,
+            mapping = aes(x = factor(season),
+                          y = us_views_millions,
+                          label = title))
+```
+
+--
+
+```{r echo=FALSE, fig.dim=c(11,6)}
+parte_1e2e3e4
+```
+
+---
+
+## Código completo ... 
+```{r eval=FALSE, tidy=FALSE}
 ggplot() + 
-  geom_boxplot(data = dados, 
-               mapping = aes(x = qualidade,
-                             y = alcohol,
-                             fill = qualidade)) +
-  geom_label(data = dados_agrup,
-             mapping = aes(x = qualidade,
-                           y = max + 1,
-                           label = n)) + 
-  geom_text(data = dados_agrup,
-            mapping = aes(x = qualidade,
-                          y = mediana,
-                          label = format(mediana, digits = 1, nsmall = 1)),
-            nudge_y = 0.2,
-            hjust = -1.1,
-            fontface = "bold") + 
-  geom_point(data = dados_agrup,
-             mapping = aes(x = qualidade,
-                           y = media),
-             colour = "white")
+  # Camada 1
+  geom_boxplot(data = df_friends_info, 
+               mapping = aes(x = factor(season),
+                             y = us_views_millions,
+                             fill = factor(season))) + 
+  # Camada 2 
+  geom_point(data = df_friends_agrup,
+             mapping = aes(x = factor(season),
+                           y = mean_views),
+             colour = "yellow", size = 2) + 
+  # Camada 3
+  geom_text(data = df_friends_agrup,
+            mapping = aes(x = factor(season),
+                          y = median_views,
+                          label = format(median_views, digits = 1, nsmall = 1)),
+            fontface = "bold", size = 4, vjust = -0.5) +
+  # Camada 4
+  geom_label(data = top_2,
+            mapping = aes(x = factor(season),
+                          y = us_views_millions,
+                          label = title))
+```
+
+
+---
+
+## Resultado ... 
+
+```{r echo=FALSE, fig.align='center', fig.dim=c(12,7)}
+ggplot() + 
+  # Camada 1
+  geom_boxplot(data = df_friends_info, 
+               mapping = aes(x = factor(season),
+                             y = us_views_millions,
+                             fill = factor(season))) + 
+  # Camada 2 
+  geom_point(data = df_friends_agrup,
+             mapping = aes(x = factor(season),
+                           y = mean_views),
+             colour = "yellow", size = 2) + 
+  # Camada 3
+  geom_text(data = df_friends_agrup,
+            mapping = aes(x = factor(season),
+                          y = median_views,
+                          label = format(median_views, digits = 1, nsmall = 1)),
+            fontface = "bold", size = 4, vjust = -0.5) +
+  # Camada 4
+  geom_label(data = top_2,
+            mapping = aes(x = factor(season),
+                          y = us_views_millions,
+                          label = title))
 ```
 
 ---
@@ -358,7 +461,7 @@ grafico +
 `scale_fill_brewer()`: essa **camada** altera as cores do `fill` que acrescentamos no boxplot, por exemplo:
 ```{r eval=FALSE, tidy=FALSE}
 grafico + 
-  scale_fill_brewer(name = "Qualidade", palette = "Purples")
+  scale_fill_brewer(name = "Temporada", palette = "Purples")
 ```
 
 `theme_bw()`, `theme_minimal()`, `theme_classic()`: essa **camada** altera o tema do gráfico:
@@ -386,15 +489,43 @@ Se quiser ver tudo que é possível ser alterado, só clicar nesse [link aqui](h
 
 # Vamos deixar aquele boxplot mais bonito?
 
+```{r include=FALSE}
+boxplot_anterior <- ggplot() + 
+  # Camada 1
+  geom_boxplot(data = df_friends_info %>% filter(season > 5), 
+               mapping = aes(x = factor(season),
+                             y = us_views_millions,
+                             fill = factor(season))) + 
+  # Camada 2 
+  geom_point(data = df_friends_agrup %>% filter(season > 5),
+             mapping = aes(x = factor(season),
+                           y = mean_views),
+             colour = "orange", size = 2) + 
+  # Camada 3
+  geom_text(data = df_friends_agrup %>% filter(season > 5),
+            mapping = aes(x = factor(season),
+                          y = median_views,
+                          label = format(median_views, digits = 1, nsmall = 1)),
+            fontface = "bold", size = 5, vjust = -0.5,
+            family= "Ink Free") +
+  # Camada 4
+  geom_label(data = top_2 %>% filter(season > 5),
+            mapping = aes(x = factor(season),
+                          y = us_views_millions,
+                          label = title, fill = factor(season)),
+            family= "Ink Free", size = 6, fontface = "bold")
+```
+
+
 ```{r eval=FALSE, tidy=FALSE}
-primeiro_boxplot + 
+boxplot_anterior + 
   # Alterando os títulos
-  labs(title = "Boxplot Percentual Alcóolico x Qualidade do vinho",
-       x = "Qualidade do Vinho",
-       y = "(%) Álcool") + 
+  labs(title = "Boxplot Us Million Views x Temporada",
+       x = "Temporada",
+       y = "Us Million Views") + 
   
   # Alterando a cor para roxo
-  scale_fill_brewer(name = "Qualidade", palette = "Purples") + 
+  scale_fill_brewer(name = "Temporada", palette = "Set3") + 
   
   # Alterando o tema
   theme_bw() + 
@@ -418,23 +549,27 @@ primeiro_boxplot +
 ### Resultado ...
 
 ```{r echo=FALSE, fig.align='center', fig.dim=c(10,7)}
-primeiro_boxplot + 
-  labs(title = "Boxplot Percentual Alcóolico x Qualidade do vinho",
-       x = "Qualidade do Vinho",
-       y = "(%) Álcool") + 
-  scale_fill_brewer(name = "Qualidade", palette = "Purples") + 
+boxplot_anterior + 
+  # Alterando os títulos
+  labs(title = "Boxplot Us Million Views x Temporada",
+       x = "Temporada",
+       y = "Us Million Views") + 
+  
+  # Alterando a cor para roxo
+  scale_fill_brewer(name = "Temporada", palette = "Set3") + 
+  # Alterando o tema
   theme_bw() + 
+  # Alterando fontes e tamanhos ... 
   theme(plot.title = element_text(family = "Ink Free", 
-                                  size = 21,
+                                  size = 20,
                                   face = "bold",
                                   colour = "#562457",
                                   hjust = 0.5),
         text = element_text(family = "Ink Free"),
-        axis.title = element_text(size = 18, face = "bold"),
-        axis.text = element_text(size = 16, face = "bold"),
-        legend.text = element_text(size = 16, face = "bold"),
-        legend.title = element_text(size = 18, face = "bold"))
-
+        axis.title = element_text(size = 17, face = "bold"),
+        axis.text = element_text(size = 15, face = "bold"),
+        legend.text = element_text(size = 15, face = "bold"),
+        legend.title = element_text(size = 17, face = "bold"))
 ```
 
 ---
@@ -447,6 +582,8 @@ class: inverse, middle, center
 Slides criados usando o pacote [**xaringan**](https://github.com/yihui/xaringan).
 
 Todo o material está disponível no [**github!**](https://github.com/lodthomaz/ggplot2)
+
+Link da apresentação: 
 
 Siga as RLadies SP no [**instagram**](https://instagram.com/rladiessaopaulo?igshid=1ij2ofwaxkr2q)  😄 
 
