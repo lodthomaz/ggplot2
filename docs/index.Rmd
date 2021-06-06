@@ -583,7 +583,7 @@ Slides criados usando o pacote [**xaringan**](https://github.com/yihui/xaringan)
 
 Todo o material está disponível no [**github!**](https://github.com/lodthomaz/ggplot2)
 
-Link da apresentação: 
+Link da apresentação: [https://lodthomaz.github.io/ggplot2/#1](https://lodthomaz.github.io/ggplot2/#1)
 
 Siga as RLadies SP no [**instagram**](https://instagram.com/rladiessaopaulo?igshid=1ij2ofwaxkr2q)  😄 
 
